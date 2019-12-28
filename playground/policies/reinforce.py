@@ -4,7 +4,6 @@ from playground.policies.base import BaseModelMixin, Policy, TrainConfig
 from playground.utils.misc import plot_learning_curve
 from playground.utils.tf_ops import dense_nn
 
-
 class ReinforcePolicy(Policy, BaseModelMixin):
     def __init__(self, env, name, training=True, gamma=0.99,
                  layer_sizes=[32, 32], baseline=False):
