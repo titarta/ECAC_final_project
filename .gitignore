@@ -1,1 +1,9 @@
 .vscode
+
+playground.egg-info
+
+playground/__pycache__
+playground/configs/__pycache__
+playground/policies/__pycache__
+playground/tests/__pycache__
+playground/utils/__pycache__
