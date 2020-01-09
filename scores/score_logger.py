@@ -60,9 +60,8 @@ class ScoreLogger:
             reader = csv.reader(scores)
             data = list(reader)
             for i in range(0, len(data)):
-                if len(data[i]) > 0:
-                    x.append(int(i))
-                    y.append(int(data[i][0]))
+                x.append(int(i))
+                y.append(int(data[i][0]))
 
         plt.subplots()
         plt.plot(x, y, label="score per run")
