@@ -11,7 +11,7 @@ from scores.score_logger import ScoreLogger
 
 ENV_NAME = "CartPole-v1"
 
-RUN_NAME = "0.25SupRate"
+RUN_NAME = "1SupRateV2"
 
 GAMMA = 0.95
 LEARNING_RATE = 0.001
@@ -25,7 +25,7 @@ EXPLORATION_MAX = 1.0
 EXPLORATION_MIN = 0.01
 EXPLORATION_DECAY = 0.96
 
-SUPERVISION_RATE = 0.25
+SUPERVISION_RATE = 1
 
 NUMBER_EPISODES = 100
 
@@ -145,6 +145,12 @@ def cartpole():
             dqn_solver.experience_replay()
         dqn_solver.exploration_decay()
         scores.append(step)
+        all_500 = True
+        for score in np.array(scores)[-3:]:
+            if score != 500:
+                all_500 = False
+        if all_500:
+            break
     plt.plot(scores)
     plt.savefig("results/{}.png".format(RUN_NAME))
     scores = np.array(scores)
