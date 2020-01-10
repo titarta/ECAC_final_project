@@ -11,7 +11,7 @@ from scores.score_logger import ScoreLogger
 
 ENV_NAME = "CartPole-v1"
 
-RUN_NAME = "0.1SupRate"
+RUN_NAME = "0.25SupRate"
 
 GAMMA = 0.95
 LEARNING_RATE = 0.001
@@ -23,9 +23,9 @@ BATCH_SIZE = 64
 
 EXPLORATION_MAX = 1.0
 EXPLORATION_MIN = 0.01
-EXPLORATION_DECAY = 0.95
+EXPLORATION_DECAY = 0.96
 
-SUPERVISION_RATE = 0.1
+SUPERVISION_RATE = 0.25
 
 NUMBER_EPISODES = 100
 
@@ -41,6 +41,7 @@ class Reward_predictor:
         self.model.add(Dense(4, activation="relu"))
         self.model.add(Dense(self.output_space, activation="linear"))
         self.model.compile(loss="mse", optimizer=Adam(lr=LEARNING_RATE))
+        self.firstFit = False
 
     def remember(self, state_next, reward):
         self.memory.append((state_next, reward))
@@ -52,10 +53,10 @@ class Reward_predictor:
     def batch_fit(self):
         if len(self.memory) < BATCH_SIZE:
             return
+        self.firstFit = True
         batch = random.sample(self.memory, BATCH_SIZE)
         for state_next, reward in batch:
             self.model.fit(state_next, [reward], verbose=0)
-
 
 class DQNSolver:
 
@@ -124,9 +125,16 @@ def cartpole():
             #doesn't consider reward
             if random.uniform(0,1) > SUPERVISION_RATE:
                 reward = reward_predictor.predict(state_next)
+                if terminal:
+                    print("Run: " + str(run) + ", exploration: " + str(dqn_solver.exploration_rate) + ", score: " + str(step))
+                    break
+                if(not reward_predictor.firstFit):
+                    state = state_next
+                    continue
             else:
                 reward_predictor.remember(state_next, reward)
                 reward_predictor.batch_fit()
+                
 
             dqn_solver.remember(state, action, reward, state_next, terminal)
             state = state_next
