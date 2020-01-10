@@ -11,7 +11,7 @@ from scores.score_logger import ScoreLogger
 
 ENV_NAME = "CartPole-v1"
 
-RUN_NAME = "24nodesNN_larger_batches"
+RUN_NAME = "0.1SupRate"
 
 GAMMA = 0.95
 LEARNING_RATE = 0.001
@@ -25,7 +25,7 @@ EXPLORATION_MAX = 1.0
 EXPLORATION_MIN = 0.01
 EXPLORATION_DECAY = 0.95
 
-SUPERVISION_RATE = 1
+SUPERVISION_RATE = 0.1
 
 NUMBER_EPISODES = 100
 
@@ -138,10 +138,11 @@ def cartpole():
         dqn_solver.exploration_decay()
         scores.append(step)
     plt.plot(scores)
-    plt.savefig("images/{}.png".format(RUN_NAME))
+    plt.savefig("results/{}.png".format(RUN_NAME))
     scores = np.array(scores)
     print("average score: {}".format(np.mean(scores)))
     print("average score last 20: {}".format(np.mean(scores[-20:])))
+    np.save("results/{}".format(RUN_NAME),scores)
     
 
 
