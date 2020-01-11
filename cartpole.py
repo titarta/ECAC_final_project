@@ -11,7 +11,7 @@ from scores.score_logger import ScoreLogger
 
 ENV_NAME = "CartPole-v1"
 
-RUN_NAME = "0.75SupRateV2"
+RUN_NAME = "0.05SupRateV2"
 
 GAMMA = 0.95
 LEARNING_RATE = 0.001
@@ -23,11 +23,11 @@ BATCH_SIZE = 64
 
 EXPLORATION_MAX = 1.0
 EXPLORATION_MIN = 0.01
-EXPLORATION_DECAY = 0.96
+EXPLORATION_DECAY = 0.996
 
-SUPERVISION_RATE = 0.75
+SUPERVISION_RATE = 0.05
 
-NUMBER_EPISODES = 300
+NUMBER_EPISODES = 1000
 
 class Reward_predictor:
 
@@ -109,6 +109,7 @@ def cartpole():
     run = 0
     scores = []
     for i in range(NUMBER_EPISODES):
+        reward_diff_sum = 0
         run += 1
         state = env.reset()
         state = np.reshape(state, [1, observation_space])
@@ -124,9 +125,12 @@ def cartpole():
 
             #doesn't consider reward
             if random.uniform(0,1) > SUPERVISION_RATE:
-                reward = reward_predictor.predict(state_next)
+                rewardAux = reward_predictor.predict(state_next)
+                reward_diff_sum += abs(reward - rewardAux)
+                reward = rewardAux
                 if terminal:
-                    print("Run: " + str(run) + ", exploration: " + str(dqn_solver.exploration_rate) + ", score: " + str(step))
+                    print("Run: " + str(run) + ", exploration: " + str(dqn_solver.exploration_rate) + ", score: " + str(step) + ", rewards error: " + str(reward_diff_sum / step))
+                    dqn_solver.remember(state, action, reward, state_next, terminal)
                     break
                 if(not reward_predictor.firstFit):
                     state = state_next
@@ -139,7 +143,7 @@ def cartpole():
             dqn_solver.remember(state, action, reward, state_next, terminal)
             state = state_next
             if terminal:
-                print("Run: " + str(run) + ", exploration: " + str(dqn_solver.exploration_rate) + ", score: " + str(step))
+                print("Run: " + str(run) + ", exploration: " + str(dqn_solver.exploration_rate) + ", score: " + str(step) + ", rewards error: " + str(reward_diff_sum / step))
                 #score_logger.add_score(step, run)
                 break
             dqn_solver.experience_replay()
