@@ -41,6 +41,12 @@ class Reward_predictor:
         self.model.add(Dense(4, activation="relu"))
         self.model.add(Dense(self.output_space, activation="linear"))
         self.model.compile(loss="mse", optimizer=Adam(lr=LEARNING_RATE))
+        # from keras.utils import plot_model
+        # import os
+        # os.environ["PATH"] += os.pathsep + \
+        #     'C:/Program Files (x86)/Graphviz2.38/bin/'
+        # plot_model(self.model, to_file='reward_predictor_model.png', show_shapes=True,)
+        # exit()
         self.firstFit = False
 
     def remember(self, state_next, reward):
